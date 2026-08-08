@@ -1,0 +1,176 @@
+@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@500;600;700;800;900&family=Marcellus&family=Noto+Serif+Devanagari:wght@400;600;700;800&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Rozha+One&display=swap');
+
+@layer base {
+  body {
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background-color: #FAF4EB;
+    color: #3C2317;
+    overflow-x: hidden;
+  }
+
+  .dark body {
+    background-color: #120D0A;
+    color: #F8ECE0;
+  }
+
+  h1, h2, h3, .font-cinzel {
+    font-family: 'Cinzel', 'Marcellus', serif;
+  }
+
+  .font-cinzel-decorative {
+    font-family: 'Cinzel Decorative', 'Cinzel', serif;
+  }
+
+  .font-rozha {
+    font-family: 'Rozha One', 'Cinzel Decorative', serif;
+  }
+
+  .font-marcellus {
+    font-family: 'Marcellus', serif;
+  }
+
+  .font-devanagari {
+    font-family: 'Noto Serif Devanagari', serif;
+  }
+}
+
+/* Glassmorphism & Sacred Temple Card Styles */
+.glass-card {
+  background: rgba(255, 250, 245, 0.82);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(217, 119, 6, 0.25);
+  border-radius: 1.5rem;
+  box-shadow: 0 15px 35px -10px rgba(180, 83, 9, 0.08), 0 0 0 1px rgba(251, 191, 36, 0.15);
+}
+
+.dark .glass-card {
+  background: rgba(26, 18, 14, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(180, 83, 9, 0.35);
+  border-radius: 1.5rem;
+  box-shadow: 0 15px 35px -10px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(217, 119, 6, 0.2);
+}
+
+/* Temple Ornamental Border Card */
+.temple-card {
+  position: relative;
+  background: linear-gradient(135deg, rgba(255, 253, 250, 0.95) 0%, rgba(254, 243, 199, 0.4) 100%);
+  border: 1px solid #F59E0B;
+  border-radius: 1.25rem;
+  box-shadow: inset 0 0 15px rgba(245, 158, 11, 0.08), 0 10px 30px rgba(180, 83, 9, 0.06);
+}
+
+.dark .temple-card {
+  background: linear-gradient(135deg, rgba(28, 19, 14, 0.95) 0%, rgba(45, 27, 16, 0.6) 100%);
+  border: 1px solid rgba(217, 119, 6, 0.5);
+  box-shadow: inset 0 0 20px rgba(217, 119, 6, 0.12), 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.glass-pill {
+  background: rgba(255, 252, 248, 0.85);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.dark .glass-pill {
+  background: rgba(38, 26, 20, 0.85);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(180, 83, 9, 0.4);
+}
+
+/* Radiant Sacred Saffron Button */
+.btn-saffron {
+  background: linear-gradient(135deg, #FF8C00 0%, #D97706 50%, #B45309 100%);
+  color: #FFFFFF;
+  font-family: 'Marcellus', 'Cinzel', serif;
+  letter-spacing: 0.03em;
+  box-shadow: 0 8px 20px -4px rgba(217, 119, 6, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btn-saffron:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 25px -4px rgba(217, 119, 6, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+.btn-saffron:active {
+  transform: translateY(1px);
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(217, 119, 6, 0.3);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(217, 119, 6, 0.6);
+}
+
+/* Subtle Lotus pulse & ambient glow */
+@keyframes ambientGlow {
+  0%, 100% {
+    opacity: 0.35;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.04);
+  }
+}
+
+.animate-ambient-glow {
+  animation: ambientGlow 8s ease-in-out infinite;
+}
+
+@keyframes floatParticle {
+  0% {
+    transform: translateY(0px) rotate(0deg);
+    opacity: 0;
+  }
+  20% {
+    opacity: 0.5;
+  }
+  80% {
+    opacity: 0.5;
+  }
+  100% {
+    transform: translateY(-120px) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+.animate-float-particle {
+  animation: floatParticle 10s linear infinite;
+}
+
+/* Print Styles for Certificate and Reports */
+@media print {
+  body {
+    background-color: #FFFFFF !important;
+    color: #000000 !important;
+  }
+  .no-print {
+    display: none !important;
+  }
+  .print-only {
+    display: block !important;
+  }
+  .glass-card {
+    border: 2px solid #E5E7EB !important;
+    box-shadow: none !important;
+    background: #FFFFFF !important;
+  }
+}
