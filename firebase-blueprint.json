@@ -1,0 +1,58 @@
+{
+  "entities": {
+    "User": {
+      "path": "users/{userId}",
+      "fields": {
+        "userId": { "type": "string" },
+        "email": { "type": "string" },
+        "displayName": { "type": "string" },
+        "photoURL": { "type": "string" },
+        "createdAt": { "type": "string" },
+        "preferredLanguage": { "type": "string" },
+        "theme": { "type": "string" },
+        "notificationsEnabled": { "type": "boolean" },
+        "soundEnabled": { "type": "boolean" }
+      }
+    },
+    "UserSadhana": {
+      "path": "users/{userId}/sadhanas/{sadhanaId}",
+      "fields": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "category": { "type": "string" },
+        "targetCount": { "type": "number" },
+        "currentCount": { "type": "number" },
+        "dailyGoal": { "type": "number" },
+        "deity": { "type": "string" },
+        "mantraText": { "type": "string" },
+        "isArchived": { "type": "boolean" },
+        "createdAt": { "type": "string" }
+      }
+    },
+    "UserSession": {
+      "path": "users/{userId}/sessions/{sessionId}",
+      "fields": {
+        "id": { "type": "string" },
+        "sadhanaId": { "type": "string" },
+        "count": { "type": "number" },
+        "timestamp": { "type": "number" },
+        "date": { "type": "string" },
+        "timeOfDay": { "type": "string" },
+        "note": { "type": "string" }
+      }
+    },
+    "UserAnusthana": {
+      "path": "users/{userId}/anusthanas/{anusthanaId}",
+      "fields": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "targetCount": { "type": "number" },
+        "currentCount": { "type": "number" },
+        "startDate": { "type": "string" },
+        "endDate": { "type": "string" },
+        "dailyTarget": { "type": "number" },
+        "isCompleted": { "type": "boolean" }
+      }
+    }
+  }
+}

@@ -1,14 +1,15 @@
 import React from 'react';
+import { AuthProvider, useAuth } from './context/AuthContext';
 import { SadhanaProvider, useSadhana } from './context/JapaContext';
 import { Header } from './components/Header';
 import { Navigation } from './components/Navigation';
 import { FloatingLotus } from './components/FloatingLotus';
 import { MilestoneCelebrationModal } from './components/MilestoneCelebrationModal';
+import { WelcomeOnboardingModal } from './components/WelcomeOnboardingModal';
 import { DashboardPage } from './pages/DashboardPage';
 import { SadhanasPage } from './pages/SadhanasPage';
 import { SadhanaDetailPage } from './pages/SadhanaDetailPage';
 import { AnusthanaPage } from './pages/AnusthanaPage';
-import { ParayanaPage } from './pages/ParayanaPage';
 import { CalendarPage } from './pages/CalendarPage';
 import { AnalyticsPage } from './pages/AnalyticsPage';
 import { MilestonesPage } from './pages/MilestonesPage';
@@ -19,6 +20,7 @@ import { SettingsPage } from './pages/SettingsPage';
 
 function MainLayout() {
   const { activeTab } = useSadhana();
+  const { showWelcomeModal, completeOnboarding } = useAuth();
 
   const renderActivePage = () => {
     switch (activeTab) {
@@ -30,8 +32,6 @@ function MainLayout() {
         return <SadhanaDetailPage />;
       case 'anusthana':
         return <AnusthanaPage />;
-      case 'parayana':
-        return <ParayanaPage />;
       case 'calendar':
         return <CalendarPage />;
       case 'analytics':
@@ -70,6 +70,12 @@ function MainLayout() {
 
         {/* Milestone Celebration Modal Popup */}
         <MilestoneCelebrationModal />
+
+        {/* Onboarding Tour Modal */}
+        <WelcomeOnboardingModal
+          isOpen={showWelcomeModal}
+          onClose={() => completeOnboarding()}
+        />
       </div>
     </div>
   );
@@ -77,8 +83,10 @@ function MainLayout() {
 
 export default function App() {
   return (
-    <SadhanaProvider>
-      <MainLayout />
-    </SadhanaProvider>
+    <AuthProvider>
+      <SadhanaProvider>
+        <MainLayout />
+      </SadhanaProvider>
+    </AuthProvider>
   );
 }

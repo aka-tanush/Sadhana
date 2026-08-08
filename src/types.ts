@@ -100,6 +100,30 @@ export type ThemeMode = 'light' | 'dark' | 'system';
 export type FontSize = 'normal' | 'large' | 'xlarge';
 export type AccentColor = 'saffron' | 'gold' | 'rudraksha' | 'emerald' | 'rose';
 
+export interface UserBadge {
+  id: string;
+  title: string;
+  icon: string;
+  description: string;
+  unlockedAt?: number;
+}
+
+export interface UserProfileData {
+  uid: string;
+  fullName: string;
+  email: string;
+  photoURL?: string;
+  dateJoined: string; // YYYY-MM-DD
+  preferredLanguage: string;
+  theme: ThemeMode;
+  notificationsEnabled: boolean;
+  soundEnabled: boolean;
+  totalSadhanasCount?: number;
+  completedAnusthanasCount?: number;
+  favoriteSadhanaName?: string;
+  onboardingCompleted?: boolean;
+}
+
 export interface UserSettings {
   theme: ThemeMode;
   accentColor: AccentColor;
@@ -147,7 +171,6 @@ export type NavigationTab =
   | 'sadhanas'
   | 'detail'
   | 'anusthana'
-  | 'parayana'
   | 'calendar'
   | 'analytics'
   | 'milestones'

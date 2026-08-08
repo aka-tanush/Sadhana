@@ -1,4 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, useMemo, ReactNode } from 'react';
+import { doc, collection, setDoc, updateDoc, deleteDoc, onSnapshot } from 'firebase/firestore';
+import { db } from '../lib/firebase';
+import { useAuth } from './AuthContext';
 import {
   Sadhana,
   SessionEntry,
@@ -282,6 +285,8 @@ export const SadhanaProvider: React.FC<{ children: ReactNode }> = ({ children })
     return DEFAULT_SETTINGS;
   });
 
+  const { user } = useAuth();
+
   const [activeTab, setActiveTab] = useState<NavigationTab>('dashboard');
   const [selectedSadhanaId, setSelectedSadhanaIdState] = useState<string | null>(null);
   const [lastAddedEntry, setLastAddedEntry] = useState<SessionEntry | null>(null);
@@ -290,6 +295,99 @@ export const SadhanaProvider: React.FC<{ children: ReactNode }> = ({ children })
   const [searchQuery, setSearchQuery] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('All');
   const [statusFilter, setStatusFilter] = useState('Active');
+
+  // Real-time Firestore Synchronization when User is logged in
+  useEffect(() => {
+    if (!user) return;
+
+    // Listen to Sadhanas
+    const sadhanasRef = collection(db, 'users', user.uid, 'sadhanas');
+    const unsubSadhanas = onSnapshot(sadhanasRef, snapshot => {
+      if (!snapshot.empty) {
+        const docs = snapshot.docs.map(d => d.data() as Sadhana);
+        setSadhanas(docs);
+      }
+    });
+
+    // Listen to Session Entries
+    const sessionsRef = collection(db, 'users', user.uid, 'sessions');
+    const unsubSessions = onSnapshot(sessionsRef, snapshot => {
+      if (!snapshot.empty) {
+        const docs = snapshot.docs.map(d => d.data() as SessionEntry);
+        setEntries(docs.sort((a, b) => b.timestamp - a.timestamp));
+      }
+    });
+
+    // Listen to Anusthanas
+    const anusthanasRef = collection(db, 'users', user.uid, 'anusthanas');
+    const unsubAnusthanas = onSnapshot(anusthanasRef, snapshot => {
+      if (!snapshot.empty) {
+        const docs = snapshot.docs.map(d => d.data() as Anusthana);
+        setAnusthanas(docs);
+      }
+    });
+
+    return () => {
+      unsubSadhanas();
+      unsubSessions();
+      unsubAnusthanas();
+    };
+  }, [user]);
+
+  // Firestore Write Helpers
+  const syncSadhanaToCloud = async (sadhana: Sadhana) => {
+    if (!user) return;
+    try {
+      await setDoc(doc(db, 'users', user.uid, 'sadhanas', sadhana.id), sadhana);
+    } catch (e) {
+      console.warn('Firestore sadhana write:', e);
+    }
+  };
+
+  const deleteSadhanaFromCloud = async (id: string) => {
+    if (!user) return;
+    try {
+      await deleteDoc(doc(db, 'users', user.uid, 'sadhanas', id));
+    } catch (e) {
+      console.warn('Firestore sadhana delete:', e);
+    }
+  };
+
+  const syncSessionToCloud = async (entry: SessionEntry) => {
+    if (!user) return;
+    try {
+      await setDoc(doc(db, 'users', user.uid, 'sessions', entry.id), entry);
+    } catch (e) {
+      console.warn('Firestore session write:', e);
+    }
+  };
+
+  const deleteSessionFromCloud = async (id: string) => {
+    if (!user) return;
+    try {
+      await deleteDoc(doc(db, 'users', user.uid, 'sessions', id));
+    } catch (e) {
+      console.warn('Firestore session delete:', e);
+    }
+  };
+
+  const syncAnusthanaToCloud = async (anusthana: Anusthana) => {
+    if (!user) return;
+    try {
+      await setDoc(doc(db, 'users', user.uid, 'anusthanas', anusthana.id), anusthana);
+    } catch (e) {
+      console.warn('Firestore anusthana write:', e);
+    }
+  };
+
+  const deleteAnusthanaFromCloud = async (id: string) => {
+    if (!user) return;
+    try {
+      await deleteDoc(doc(db, 'users', user.uid, 'anusthanas', id));
+    } catch (e) {
+      console.warn('Firestore anusthana delete:', e);
+    }
+  };
 
   // Sync to LocalStorage
   useEffect(() => {
@@ -349,11 +447,19 @@ export const SadhanaProvider: React.FC<{ children: ReactNode }> = ({ children })
     };
     setSadhanas(prev => [newSadhana, ...prev]);
     setSelectedSadhanaIdState(newSadhana.id);
+    syncSadhanaToCloud(newSadhana);
     return newSadhana;
   };
 
   const editSadhana = (id: string, data: Partial<Sadhana>) => {
-    setSadhanas(prev => prev.map(s => (s.id === id ? { ...s, ...data } : s)));
+    setSadhanas(prev => prev.map(s => {
+      if (s.id === id) {
+        const updated = { ...s, ...data };
+        syncSadhanaToCloud(updated);
+        return updated;
+      }
+      return s;
+    }));
   };
 
   const deleteSadhana = (id: string) => {
@@ -363,10 +469,18 @@ export const SadhanaProvider: React.FC<{ children: ReactNode }> = ({ children })
     if (selectedSadhanaId === id) {
       setSelectedSadhanaIdState(null);
     }
+    deleteSadhanaFromCloud(id);
   };
 
   const archiveSadhana = (id: string) => {
-    setSadhanas(prev => prev.map(s => (s.id === id ? { ...s, isArchived: !s.isArchived } : s)));
+    setSadhanas(prev => prev.map(s => {
+      if (s.id === id) {
+        const updated = { ...s, isArchived: !s.isArchived };
+        syncSadhanaToCloud(updated);
+        return updated;
+      }
+      return s;
+    }));
   };
 
   // Computed Overall Totals
@@ -426,6 +540,7 @@ export const SadhanaProvider: React.FC<{ children: ReactNode }> = ({ children })
 
     setEntries(prev => [newEntry, ...prev]);
     setLastAddedEntry(newEntry);
+    syncSessionToCloud(newEntry);
 
     // Audio & tactile feedback
     if (count >= 108) {
@@ -441,6 +556,7 @@ export const SadhanaProvider: React.FC<{ children: ReactNode }> = ({ children })
 
   const undoLastSession = (): boolean => {
     if (!lastAddedEntry) return false;
+    deleteSessionFromCloud(lastAddedEntry.id);
     setEntries(prev => prev.filter(e => e.id !== lastAddedEntry.id));
     setLastAddedEntry(null);
     soundManager.triggerVibration(settings.vibrationEnabled, 40);
@@ -450,14 +566,20 @@ export const SadhanaProvider: React.FC<{ children: ReactNode }> = ({ children })
   const deleteEntry = (id: string) => {
     setEntries(prev => prev.filter(e => e.id !== id));
     if (lastAddedEntry?.id === id) setLastAddedEntry(null);
+    deleteSessionFromCloud(id);
   };
 
   const editEntry = (id: string, count: number, timeOfDay: TimeOfDay, notes?: string) => {
     if (count <= 0) return;
     setEntries(prev =>
-      prev.map(e =>
-        e.id === id ? { ...e, count, timeOfDay, notes: notes?.trim() || undefined } : e
-      )
+      prev.map(e => {
+        if (e.id === id) {
+          const updated = { ...e, count, timeOfDay, notes: notes?.trim() || undefined };
+          syncSessionToCloud(updated);
+          return updated;
+        }
+        return e;
+      })
     );
   };
 
@@ -468,11 +590,13 @@ export const SadhanaProvider: React.FC<{ children: ReactNode }> = ({ children })
       id: 'anu-' + Date.now() + '-' + Math.random().toString(36).substring(2, 6)
     };
     setAnusthanas(prev => [newAnu, ...prev]);
+    syncAnusthanaToCloud(newAnu);
     return newAnu;
   };
 
   const deleteAnusthana = (id: string) => {
     setAnusthanas(prev => prev.filter(a => a.id !== id));
+    deleteAnusthanaFromCloud(id);
   };
 
   // Parayana Management

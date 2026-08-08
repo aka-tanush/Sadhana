@@ -75,7 +75,7 @@ export const MilestoneCelebrationModal: React.FC = () => {
               className="btn-saffron py-3 px-6 text-sm font-bold rounded-2xl flex items-center justify-center gap-2"
             >
               <Award className="w-4 h-4" />
-              <span>View Completion Certificate</span>
+              <span>View Milestone Badge</span>
             </button>
 
             <button

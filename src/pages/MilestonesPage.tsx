@@ -1,16 +1,12 @@
 import React, { useState } from 'react';
 import { useSadhana } from '../context/JapaContext';
 import { Milestone } from '../types';
-import { Award, CheckCircle2, Lock, Printer, Sparkles, X, Share2 } from 'lucide-react';
+import { Award, Lock, Sparkles, X, Share2, CheckCircle2 } from 'lucide-react';
 import { formatNumber } from '../utils/formatters';
 
 export const MilestonesPage: React.FC = () => {
-  const { milestonesStatus, settings, totalOverallCount } = useSadhana();
-  const [selectedCertificate, setSelectedCertificate] = useState<(Milestone & { isAchieved: boolean; achievedAt?: number }) | null>(null);
-
-  const handlePrint = () => {
-    window.print();
-  };
+  const { milestonesStatus, totalOverallCount } = useSadhana();
+  const [selectedBadge, setSelectedBadge] = useState<(Milestone & { isAchieved: boolean; achievedAt?: number }) | null>(null);
 
   return (
     <div className="space-y-6 pb-12">
@@ -22,10 +18,10 @@ export const MilestonesPage: React.FC = () => {
           </div>
           <h2 className="text-2xl font-bold font-rozha text-amber-950 dark:text-amber-100 flex items-center gap-2 tracking-wide">
             <Award className="w-6 h-6 text-amber-600" />
-            <span>Spiritual Milestones & Certificates</span>
+            <span>Spiritual Milestone Badges</span>
           </h2>
           <p className="text-xs text-stone-600 dark:text-stone-300 mt-1">
-            Unlock ceremonial certificates of completion as your total chant count reaches sacred milestones.
+            Unlock sacred badges of devotion as your total chant count reaches spiritual milestones.
           </p>
         </div>
 
@@ -42,24 +38,34 @@ export const MilestonesPage: React.FC = () => {
               key={milestone.targetCount}
               className={`glass-card p-6 border-2 flex flex-col justify-between transition-all ${
                 milestone.isAchieved
-                  ? 'border-amber-400 dark:border-amber-600 shadow-xl'
+                  ? 'border-amber-400 dark:border-amber-600 shadow-xl bg-gradient-to-b from-amber-500/5 to-transparent'
                   : 'border-stone-200/60 dark:border-stone-800 opacity-70'
               }`}
             >
               <div>
-                <div className="flex items-center justify-between mb-3">
-                  <span className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-amber-500 to-orange-500 text-white font-bold flex items-center justify-center text-lg shadow-md">
-                    {milestone.isAchieved ? '🪷' : '🔒'}
-                  </span>
+                <div className="flex items-center justify-between mb-4">
+                  {/* Badge Icon Visual */}
+                  <div className={`relative w-12 h-12 rounded-2xl flex items-center justify-center text-2xl shadow-md border ${
+                    milestone.isAchieved
+                      ? 'bg-gradient-to-tr from-amber-600 via-orange-500 to-amber-400 text-white border-amber-300 shadow-amber-500/30'
+                      : 'bg-stone-200 dark:bg-stone-800 text-stone-400 border-stone-300 dark:border-stone-700'
+                  }`}>
+                    <span>{milestone.isAchieved ? '🪷' : '🔒'}</span>
+                    {milestone.isAchieved && (
+                      <span className="absolute -bottom-1 -right-1 w-5 h-5 bg-emerald-500 text-white rounded-full flex items-center justify-center text-[10px] shadow-sm">
+                        ✓
+                      </span>
+                    )}
+                  </div>
 
                   <span
                     className={`px-3 py-1 rounded-full text-xs font-bold border ${
                       milestone.isAchieved
-                        ? 'bg-emerald-100 text-emerald-900 border-emerald-300'
-                        : 'bg-stone-100 text-stone-600 border-stone-300'
+                        ? 'bg-emerald-100 dark:bg-emerald-950/80 text-emerald-900 dark:text-emerald-200 border-emerald-300 dark:border-emerald-800'
+                        : 'bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-400 border-stone-300 dark:border-stone-700'
                     }`}
                   >
-                    {milestone.isAchieved ? 'Unlocked!' : 'In Progress'}
+                    {milestone.isAchieved ? 'Badge Earned!' : 'Locked'}
                   </span>
                 </div>
 
@@ -68,7 +74,7 @@ export const MilestonesPage: React.FC = () => {
                 </h3>
 
                 {milestone.sanskritTitle && (
-                  <p className="text-xs font-devanagari text-amber-800 dark:text-amber-300 mb-2">
+                  <p className="text-xs font-devanagari font-bold text-amber-800 dark:text-amber-300 mb-2">
                     {milestone.sanskritTitle}
                   </p>
                 )}
@@ -82,14 +88,14 @@ export const MilestonesPage: React.FC = () => {
                 </p>
               </div>
 
-              <div className="mt-4 pt-3 border-t border-amber-200/40">
+              <div className="mt-4 pt-3 border-t border-amber-200/40 dark:border-stone-800">
                 {milestone.isAchieved ? (
                   <button
-                    onClick={() => setSelectedCertificate(milestone)}
-                    className="w-full btn-saffron py-2.5 px-3 text-xs font-bold rounded-xl flex items-center justify-center gap-1.5"
+                    onClick={() => setSelectedBadge(milestone)}
+                    className="w-full btn-saffron py-2.5 px-3 text-xs font-bold rounded-xl flex items-center justify-center gap-2"
                   >
                     <Award className="w-4 h-4" />
-                    <span>View Completion Certificate</span>
+                    <span>View Sacred Badge</span>
                   </button>
                 ) : (
                   <div className="flex items-center gap-2 text-xs font-semibold text-stone-500 justify-center py-2">
@@ -103,81 +109,63 @@ export const MilestonesPage: React.FC = () => {
         })}
       </div>
 
-      {/* Printable Certificate Modal */}
-      {selectedCertificate && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md overflow-y-auto">
-          <div className="relative max-w-2xl w-full bg-[#FFFBF2] text-[#3D251E] p-8 sm:p-12 rounded-3xl border-4 border-[#D97706] shadow-2xl my-8">
-            {/* Close & Action Buttons */}
-            <div className="absolute top-4 right-4 flex items-center gap-2 print:hidden">
-              <button
-                onClick={handlePrint}
-                className="p-2 rounded-xl bg-amber-600 text-white font-bold text-xs flex items-center gap-1 hover:bg-amber-700"
-              >
-                <Printer className="w-4 h-4" />
-                <span>Print / Save PDF</span>
-              </button>
-              <button
-                onClick={() => setSelectedCertificate(null)}
-                className="p-2 rounded-xl bg-stone-200 text-stone-700 hover:bg-stone-300"
-              >
-                <X className="w-5 h-5" />
-              </button>
+      {/* Badge View Modal */}
+      {selectedBadge && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md">
+          <div className="relative max-w-sm w-full glass-card p-8 rounded-3xl border-2 border-amber-400 dark:border-amber-600 shadow-2xl text-center overflow-hidden">
+            {/* Background Radial Glow */}
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-amber-400/20 via-orange-300/10 to-transparent pointer-events-none" />
+
+            <button
+              onClick={() => setSelectedBadge(null)}
+              className="absolute top-4 right-4 p-2 rounded-xl bg-stone-200 dark:bg-stone-800 text-stone-600 dark:text-stone-300 hover:bg-stone-300 transition-colors z-10"
+              aria-label="Close Modal"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            {/* Sacred Badge Emblem Display */}
+            <div className="relative inline-flex flex-col items-center justify-center my-4">
+              <div className="w-28 h-28 rounded-full bg-gradient-to-tr from-amber-600 via-orange-500 to-amber-300 p-1 shadow-2xl shadow-amber-500/40 border-2 border-amber-200 flex items-center justify-center">
+                <div className="w-full h-full rounded-full bg-[#1A0E2E] flex flex-col items-center justify-center text-white border border-amber-400/50 p-2">
+                  <span className="text-4xl mb-1">🪷</span>
+                  <span className="text-[10px] font-marcellus font-bold text-amber-300 uppercase tracking-widest">
+                    Sacred Badge
+                  </span>
+                </div>
+              </div>
+              <div className="absolute -bottom-2 px-3 py-0.5 rounded-full bg-emerald-500 text-white text-[10px] font-bold uppercase tracking-wider shadow-md flex items-center gap-1">
+                <CheckCircle2 className="w-3 h-3" />
+                <span>Unlocked</span>
+              </div>
             </div>
 
-            {/* Certificate Decorative Border */}
-            <div className="border-2 border-dashed border-[#B45309] p-6 rounded-2xl text-center relative overflow-hidden">
-              <div className="text-4xl mb-2">ॐ</div>
-
-              <p className="text-xs font-bold uppercase tracking-widest text-[#B45309] mb-1 font-serif">
-                Certificate of Spiritual Accomplishment
+            <div className="mt-3">
+              <p className="text-[11px] font-marcellus font-bold uppercase tracking-widest text-amber-700 dark:text-amber-300 mb-1">
+                {selectedBadge.sanskritTitle || 'ॐ श्री परमात्मने नमः'}
+              </p>
+              <h3 className="text-2xl font-extrabold font-cinzel text-amber-950 dark:text-amber-100 mb-1">
+                {selectedBadge.title}
+              </h3>
+              <p className="text-xs font-bold text-amber-600 dark:text-amber-400 mb-3 font-mono">
+                {selectedBadge.targetCount.toLocaleString('en-IN')} Sacred Chants Completed
+              </p>
+              <p className="text-xs text-stone-600 dark:text-stone-300 leading-relaxed bg-white/60 dark:bg-stone-900/60 p-3 rounded-2xl border border-amber-200/50 dark:border-stone-800 mb-5">
+                {selectedBadge.description}
               </p>
 
-              <h1 className="text-3xl sm:text-4xl font-extrabold font-cinzel text-[#78350F] my-2">
-                SADHANA PURASCHARANA
-              </h1>
-
-              <p className="text-sm italic text-[#92400E] mb-6">
-                This is solemnly awarded in recognition of sacred devotion and relentless discipline to
-              </p>
-
-              <h2 className="text-2xl sm:text-3xl font-bold font-serif text-[#1C1613] underline decoration-amber-500 decoration-2 mb-6">
-                {settings.userName || 'Devoted Sadhaka'}
-              </h2>
-
-              <p className="text-sm text-[#3D251E] max-w-md mx-auto mb-6 leading-relaxed">
-                For successfully fulfilling the sacred vow of chanting <br />
-                <span className="font-extrabold text-[#B45309] text-base">
-                  {selectedCertificate.targetCount.toLocaleString('en-IN')} Sacred Mantras
-                </span>
-                <br />
-                achieving the milestone of <span className="font-bold">{selectedCertificate.title}</span>.
-              </p>
-
-              <div className="my-6 py-4 px-6 bg-[#FEF3C7] rounded-2xl border border-[#FCD34D] inline-block">
-                <p className="text-sm font-devanagari font-bold text-[#78350F]">
-                  {selectedCertificate.sanskritTitle || 'ॐ श्री परमात्मने नमः'}
+              {selectedBadge.achievedAt && (
+                <p className="text-[11px] text-stone-500 dark:text-stone-400 font-marcellus mb-4">
+                  Badge Earned On: {new Date(selectedBadge.achievedAt).toLocaleDateString('en-IN')}
                 </p>
-                <p className="text-xs italic text-[#92400E] mt-1">
-                  "By continuous remembrance and meditation, divine light dawns in the heart."
-                </p>
-              </div>
+              )}
 
-              <div className="mt-8 pt-6 border-t border-[#F59E0B]/40 flex items-center justify-between text-xs font-semibold text-[#78350F]">
-                <div>
-                  <p className="text-[10px] text-stone-500 uppercase">Awarded On</p>
-                  <p>{selectedCertificate.achievedAt ? new Date(selectedCertificate.achievedAt).toLocaleDateString('en-IN') : new Date().toLocaleDateString('en-IN')}</p>
-                </div>
-
-                <div className="text-center">
-                  <span className="text-2xl">🪷</span>
-                  <p className="text-[10px] uppercase font-bold text-[#B45309]">Sadhana Tracker Official Seal</p>
-                </div>
-
-                <div className="text-right">
-                  <p className="text-[10px] text-stone-500 uppercase">Sanctuary Verification</p>
-                  <p className="font-mono">ST-CERT-{(selectedCertificate.targetCount / 1000).toFixed(0)}K</p>
-                </div>
-              </div>
+              <button
+                onClick={() => setSelectedBadge(null)}
+                className="w-full btn-saffron py-2.5 px-4 text-xs font-bold rounded-2xl"
+              >
+                Close Badge View
+              </button>
             </div>
           </div>
         </div>
@@ -185,3 +173,4 @@ export const MilestonesPage: React.FC = () => {
     </div>
   );
 };
+

@@ -41,7 +41,7 @@ export const PanchangaPage: React.FC = () => {
             <span>Vedic Panchanga & Tithi Calendar</span>
           </h2>
           <p className="text-xs text-stone-600 dark:text-stone-300 mt-1">
-            Align your daily Japa and Parayana with lunar phases, Ekadashi Vratas, and auspicious Tithis.
+            Align your daily Japa with lunar phases, Ekadashi Vratas, and auspicious Tithis.
           </p>
         </div>
 
@@ -198,24 +198,6 @@ export const PanchangaPage: React.FC = () => {
                 </div>
               )}
             </div>
-          </div>
-
-          {/* Quick Nav to Parayana */}
-          <div className="glass-card p-5 border border-amber-200/60 flex items-center justify-between gap-3">
-            <div>
-              <p className="text-xs font-bold text-amber-950 dark:text-amber-100">
-                Scripture Parayana
-              </p>
-              <p className="text-[11px] text-stone-500">
-                Read Bhagavad Gita or Sundara Kanda today
-              </p>
-            </div>
-            <button
-              onClick={() => setActiveTab('parayana')}
-              className="px-3 py-1.5 rounded-xl bg-amber-100 dark:bg-amber-950 text-amber-900 dark:text-amber-200 text-xs font-bold hover:bg-amber-200"
-            >
-              Open Books
-            </button>
           </div>
         </div>
       </div>
